@@ -33,10 +33,10 @@ int main(int argc, char *argv[])
     };
 
     // 2. Use getopt().
-    int c;
+    int opt;
     char *optarg;
-    while (c = getopt(&argc, &argv, &optarg, opts)) {
-        switch (c) {
+    while (opt = getopt(&argc, &argv, &optarg, opts)) {
+        switch (opt) {
             case 'f':
                 flag = 1;
                 break;
