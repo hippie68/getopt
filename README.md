@@ -106,10 +106,10 @@ void print_subcommands(FILE *stream, const struct option *opts);
 
 ### Subcommands
 
-Each subcommand can use its own option array, which itself may contain other subcommands. Subcommands may be put inside dedicated functions, for example:
+Each subcommand can use its own option array, which itself may contain other subcommands. One way to use subcommands is to put them inside dedicated functions, for example:
 
 ```
-int subcommand1(int *argc, char **argv[])
+int subcommand1(int argc, char *argv[])
 {
     static struct option opts[] = {
         ...
@@ -117,7 +117,7 @@ int subcommand1(int *argc, char **argv[])
 
     int opt;
     char *optarg;
-    while (opt = getopt(argc, argv, &optarg, opts)) {
+    while (opt = getopt(&argc, &argv, &optarg, opts)) {
         switch (opt) {
             ...
         }
@@ -125,10 +125,23 @@ int subcommand1(int *argc, char **argv[])
 
     // Handle remaining operands here.
     ...
+
+    return 0;
 }
 ```
 
-Subcommand functions can be called directly from within a running getopt() switch, by passing the current argc and argv pointers.
+Such subcommand functions can be called directly from within a running getopt() switch, by passing the current argc and argv variables:
+
+```
+int main(int argc, char *argv[])
+{
+    ...
+    while (opt = getopt(&argc, &argv, &optarg, opts)) {
+        ...
+        case -1:
+            return subcommand1(argc, argv); // Transfer control to subcommand1().
+        ...
+```
 
 ### Preprocessor directives
 
