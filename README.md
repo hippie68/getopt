@@ -16,6 +16,9 @@ Parsing capabilities:
 ## Quick example
 
 ```
+#include "getopt.h"
+#include <stdio.h>
+
 int main(int argc, char *argv[])
 {
     int flag = 0;
@@ -30,7 +33,8 @@ int main(int argc, char *argv[])
     };
 
     // 2. Use getopt().
-    char c, *optarg;
+    int c;
+    char *optarg;
     while (c = getopt(&argc, &argv, &optarg, opts)) {
         switch (c) {
             case 'f':
@@ -113,7 +117,7 @@ int subcommand1(int *argc, char **argv[])
 
     int opt;
     char *optarg;
-    while ((opt = getopt(argc, argv, &optarg, opts)) != 0) {
+    while (opt = getopt(argc, argv, &optarg, opts)) {
         switch (opt) {
             ...
         }
