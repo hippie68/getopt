@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
 #define ERR_LONGOPT_NEEDARG "Option --%s requires an argument.\n"
 #define ERR_SHRTOPT_UNKNOWN "Unknown option: -%c\n"
 #define ERR_LONGOPT_UNKNOWN "Unknown option: --%s\n"
+#define ERR_COMMAND_UNKNOWN "Unknown subcommand: %s\n"
 #define ERR_LONGOPT_HATEARG "Option --%s doesn't allow an argument.\n"
 
 static char var_HIDEOPT; // Dummy variable to make the HIDEOPT pointer unique.
@@ -208,7 +209,7 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option *opts)
 
         // Don't move operand if subcommands exist.
         if (subcommands_exist) {
-            fprintf(stderr, "Unkown subcommand: %s\n", argp);
+            fprintf(stderr, ERR_COMMAND_UNKNOWN, argp);
             return '?';
         }
 
