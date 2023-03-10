@@ -17,9 +17,6 @@ Parsing capabilities:
 ## Quick example
 
 ```
-#include "getopt.h"
-#include <stdio.h>
-
 int main(int argc, char *argv[])
 {
     int flag = 0;
@@ -27,9 +24,9 @@ int main(int argc, char *argv[])
 
     // 1. Define an option array.
     static struct option opts[] = {
-        { 'f', "set-flag",   NULL,   "Set the variable \"flag\" to 1."  },
+        { 'f', "set-flag",   NULL,   "Set flag to 1."       },
         { 'h', "help",       NULL,   "Print help and quit." },
-        { 's', "set-string", "NAME", "Set the string to NAME." },
+        { 's', "set-string", "NAME", "Set string to NAME."  },
         { 0 }
     };
 
@@ -41,7 +38,7 @@ int main(int argc, char *argv[])
                 flag = 1;
                 break;
             case 'h':
-                puts("Options:\n");
+                printf("Options:\n");
                 print_options(stdout, opts);
                 return 0;
             case 's':
@@ -57,7 +54,6 @@ int main(int argc, char *argv[])
     for (int i = 0; i <= argc; i++)
         printf("argv[%d]: %s\n", i, argv[i] ? argv[i] : "NULL");
 }
-
 ```
 
 Output of option -h/--help:
