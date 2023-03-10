@@ -7,12 +7,11 @@ Parsing capabilities:
 - Short options and short option groups: -a -b -c or -abc
 - Short option arguments: -cARG or -c ARG or -abcARG
 - Long option arguments: --option=ARG or --option ARG
-- End of options delimiter: "--" (after this, all arguments are treated as operands\*)
-- Recognizes the stdin/stdout option "-"
+- The order of options and operands (non-options) does not matter.
+- End of options delimiter: "--" (after this, all arguments are treated as operands)
+- Recognizes the stdin/stdout option "-".
 - Subcommands can be called from within a running getopt() switch.
 - After parsing is done, argv only contains remaining operands.
-
-\*An operand is an argument that is not an option.
 
 ## Quick example
 
