@@ -37,9 +37,10 @@ int main(int argc, char *argv[])
         { 'h', "help", NULL, "Print help information and quit." },
     };
 
-    char c, *optarg;
-    while (c = getopt(&argc, &argv, &optarg, opts)) {
-        switch (c) {
+    int opt;
+    char *optarg;
+    while (opt = getopt(&argc, &argv, &optarg, opts)) {
+        switch (opt) {
             case 'h':
                 print_options(stdout, opts); // Embed this in a help function.
                 return 0;
