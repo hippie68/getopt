@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 static char var_HIDEOPT; // Dummy variable to make the HIDEOPT pointer unique.
 
 // Left-shifts array elements by 1, moving the first element to the end.
-static int shift(char *argv[])
+static void shift(char *argv[])
 {
     char *first_element = argv[0];
     while (argv[1] != NULL) {
@@ -344,7 +344,7 @@ int print_options(FILE *stream, const struct option *opts)
                 if (opt->name || opt->arg[0] == '[')
                     len++;
             }
-            if (len > indent && len < GETOPT_LINE_MAXLEN - GETOPT_BLCK_MINLEN)
+            if (len > indent && len <= GETOPT_LINE_MAXLEN - GETOPT_BLCK_MINLEN)
                 indent = len;
         }
         opt++;
@@ -387,19 +387,18 @@ static void print_subcmd(FILE *stream, const struct option *opt, int indent)
 void print_subcommands(FILE *stream, const struct option *opts)
 {
     const struct option *opt = opts;
-    int subcommands = 0;
 
     // Calculate subcommand description indentation.
     // Adjustments here must be done in print_subcmd(), too.
     int indent = 0;
     while (opt->index) {
         if (opt->index < 0) {
-            int len = 2; // Minimum indentation
+            int len = 4; // Minimum indentation, "  .name" and "  .description".
             if (opt->name)
                 len += strlen(opt->name);
             if (opt->arg)
                 len += 1 + strlen(opt->arg);
-            if (len > indent)
+            if (len > indent && len <= GETOPT_LINE_MAXLEN - GETOPT_BLCK_MINLEN)
                 indent = len;
         }
         opt++;
