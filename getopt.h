@@ -117,11 +117,11 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option *opts)
                 (*argv)++;
                 (*argc)--;
 
-                // Shift all remaining operands.
+                // Shift-hide all remaining operands.
                 if ((*argv)[*argc] != NULL)
                     while (*argc) {
                         shift(*argv);
-                        *argc -= 1;
+                        (*argc)--;
                     }
 
                 goto parsing_finished;
@@ -142,7 +142,7 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option *opts)
                             fprintf(stderr, ERR_LONGOPT_HATEARG, opt->name);
                             return '?';
                         }
-                    } else if (opt->arg) {
+                    } else if (opt->arg && opt->arg[0] != '[') {
                         (*argv)++;
                         (*argc)--;
                         *optarg = **argv;
@@ -164,10 +164,11 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option *opts)
             while (opt->index) {
                 if (opt->index == *argp) { // Short option is known.
                     if (*(argp + 1) == '\0') { // No characters are attached.
-                        if (opt->arg) {
+                        if (opt->arg && opt->arg[0] != '[') {
                             (*argv)++;
                             (*argc)--;
                             if (**argv == NULL ) {
+                                short_option_arg_missing:
                                 fprintf(stderr, ERR_SHRTOPT_NEEDARG, *argp);
                                 return '?';
                             } else {
@@ -213,7 +214,7 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option *opts)
             return '?';
         }
 
-        // Move operand to the end of argv[] and hide it there for now.
+        // Move operand to the end of argv[] and hide it for now.
         shift(*argv);
         (*argc)--; // Hide it.
 
@@ -227,10 +228,8 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option *opts)
     ;
 
     // Unhide any previously hidden operands.
-    int i = 0;
-    while ((*argv)[i] != NULL)
-        i++;
-    *argc += i;
+    while ((*argv)[*argc] != NULL)
+        (*argc)++;
 
     return 0;
 }
