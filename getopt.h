@@ -168,7 +168,6 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option *opts)
                             (*argv)++;
                             (*argc)--;
                             if (**argv == NULL ) {
-                                short_option_arg_missing:
                                 fprintf(stderr, ERR_SHRTOPT_NEEDARG, *argp);
                                 return '?';
                             } else {
