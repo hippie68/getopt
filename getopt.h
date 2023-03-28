@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
 {
     static struct option opts[] = {
         { 'h', "help", NULL, "Print help information and quit." },
+        { 0 }
     };
 
     int opt;
@@ -42,7 +43,7 @@ int main(int argc, char *argv[])
     while (opt = getopt(&argc, &argv, &optarg, opts)) {
         switch (opt) {
             case 'h':
-                print_options(stdout, opts); // Embed this in a help function.
+                print_options(stdout, opts);
                 return 0;
             default: // Error
                 return 1;
@@ -140,7 +141,7 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option *opts)
                     if (*optarg) {
                         if (opt->arg == NULL) {
                             fprintf(stderr, ERR_LONGOPT_HATEARG, opt->name);
-                            return '?';
+                            return '+';
                         }
                     } else if (opt->arg && opt->arg[0] != '[') {
                         (*argv)++;
@@ -148,7 +149,7 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option *opts)
                         *optarg = **argv;
                         if (*optarg == NULL) {
                             fprintf(stderr, ERR_LONGOPT_NEEDARG, opt->name);
-                            return '?';
+                            return ':';
                         }
                     }
                     return opt->index;
@@ -169,7 +170,7 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option *opts)
                             (*argc)--;
                             if (**argv == NULL ) {
                                 fprintf(stderr, ERR_SHRTOPT_NEEDARG, *argp);
-                                return '?';
+                                return ':';
                             } else {
                                 *optarg = **argv;
                             }
@@ -233,7 +234,6 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option *opts)
     return 0;
 }
 
-
 // Helper function for print_block().
 static int next_word_size(char *p)
 {
@@ -243,7 +243,6 @@ static int next_word_size(char *p)
     } while (*word_end != ' ' && *word_end != '\0');
     return word_end - p;
 }
-
 
 // Uses word-wrapping to print an indented string over multiple lines.
 static void print_block(FILE *stream, char *str, int indent, int start)
