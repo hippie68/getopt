@@ -21,14 +21,14 @@ struct option {
 #define HIDEOPT &var_HIDEOPT // Hides options if used as value for .description.
 
 // Return values: 0 when done, '?' on error, otherwise an option's .index value.
-int getopt(int *argc, char **argv[], char **optarg, const struct option *opts);
+int getopt(int *argc, char **argv[], char **optarg, const struct option opts[]);
 
 // Prints the specified option array's options.
 // Returns 1 if the array has subcommands, otherwise 0.
-int print_options(FILE *stream, const struct option *opts);
+int print_options(FILE *stream, const struct option opts[]);
 
 // Prints the specified option array's subcommands.
-void print_subcommands(FILE *stream, const struct option *opts);
+void print_subcommands(FILE *stream, const struct option opts[]);
 
 /* Quick example:
 int main(int argc, char *argv[])
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
             case 'h':
                 print_options(stdout, opts);
                 return 0;
-            default: // Error
+            case '?': // Error
                 return 1;
         }
     }
@@ -86,7 +86,7 @@ static void shift(char *argv[])
 }
 
 // Return values: 0 when done, '?' on error, otherwise an option's .index value.
-int getopt(int *argc, char **argv[], char **optarg, const struct option *opts)
+int getopt(int *argc, char **argv[], char **optarg, const struct option opts[])
 {
     if (*argc <= 0 || argv == NULL || *argv == NULL || **argv == NULL
         || optarg == NULL || opts == NULL)
@@ -141,15 +141,14 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option *opts)
                     if (*optarg) {
                         if (opt->arg == NULL) {
                             fprintf(stderr, ERR_LONGOPT_HATEARG, opt->name);
-                            return '+';
+                            return '?';
                         }
                     } else if (opt->arg && opt->arg[0] != '[') {
                         (*argv)++;
                         (*argc)--;
-                        *optarg = **argv;
-                        if (*optarg == NULL) {
+                        if (*argc == 0 || (*optarg = **argv) == NULL) {
                             fprintf(stderr, ERR_LONGOPT_NEEDARG, opt->name);
-                            return ':';
+                            return '?';
                         }
                     }
                     return opt->index;
@@ -166,13 +165,12 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option *opts)
                 if (opt->index == *argp) { // Short option is known.
                     if (*(argp + 1) == '\0') { // No characters are attached.
                         if (opt->arg && opt->arg[0] != '[') {
+                            fprintf(stderr, "argc: %d\n", *argc);
                             (*argv)++;
                             (*argc)--;
-                            if (**argv == NULL ) {
+                            if (*argc == 0 || (*optarg = **argv) == NULL) {
                                 fprintf(stderr, ERR_SHRTOPT_NEEDARG, *argp);
-                                return ':';
-                            } else {
-                                *optarg = **argv;
+                                return '?';
                             }
                         }
                     } else { // Option has attached characters.
@@ -323,7 +321,7 @@ static void print_opt(FILE *stream, const struct option *opt, int indent)
 
 // Prints the specified option array's options.
 // Returns 1 if the array has subcommands, otherwise 0.
-int print_options(FILE *stream, const struct option *opts)
+int print_options(FILE *stream, const struct option opts[])
 {
     const struct option *opt = opts;
     int has_subcommands = 0;
@@ -381,7 +379,7 @@ static void print_subcmd(FILE *stream, const struct option *opt, int indent)
 }
 
 // Prints the specified option array's subcommands.
-void print_subcommands(FILE *stream, const struct option *opts)
+void print_subcommands(FILE *stream, const struct option opts[])
 {
     const struct option *opt = opts;
 
