@@ -165,7 +165,6 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option opts[])
                 if (opt->index == *argp) { // Short option is known.
                     if (*(argp + 1) == '\0') { // No characters are attached.
                         if (opt->arg && opt->arg[0] != '[') {
-                            fprintf(stderr, "argc: %d\n", *argc);
                             (*argv)++;
                             (*argc)--;
                             if (*argc == 0 || (*optarg = **argv) == NULL) {
