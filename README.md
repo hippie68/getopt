@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
             case 's':
                 string = optarg;
                 break;
-            default: // Error
+            case '?': // Error
                 return 1;
         }
     }
@@ -86,7 +86,7 @@ struct option {
 
 ```
 // Return values: 0 when done, '?' on error, otherwise an option's .index value.
-int getopt(int *argc, char **argv[], char **optarg, const struct option *opts);
+int getopt(int *argc, char **argv[], char **optarg, const struct option opts[]);
 ```
 
 - Returns '-' when encountering "-" (the stdin/stdout option).
@@ -94,14 +94,14 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option *opts);
 ```
 // Prints the specified option array's options.
 // Returns 1 if the array has subcommands, otherwise 0.
-int print_options(FILE *stream, const struct option *opts);
+int print_options(FILE *stream, const struct option opts[]);
 ```
 
 - The return value is useful to decide whether to use print_subcommands() inside a help function.
 
 ```
 // Prints the specified option array's subcommands.
-void print_subcommands(FILE *stream, const struct option *opts);
+void print_subcommands(FILE *stream, const struct option opts[]);
 ```
 
 ### Subcommands
