@@ -9,7 +9,7 @@ Parsing capabilities:
 - Long option arguments: --option=ARG or --option ARG
 - The order of options and operands (non-options) does not matter.
 - End of options delimiter: "--" (after this, all arguments are treated as operands)
-- Recognizes the stdin/stdout option "-".
+- Recognizes the stdin/stdout operand "-".
 - Subcommands can be called from within a running getopt() switch.
 - After parsing is done, argv only contains remaining operands.
 
