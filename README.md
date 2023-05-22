@@ -71,17 +71,21 @@ Options:
 
 ```
 struct option {
-    int index;         // The option's short name (a single character).
-    char *name;        // The option's long name (without leading "--").
-    char *arg;         // An option-argument in text format as it is supposed to
-                       // appear in the help screen: "ARG", "[ARG]", "<arg>"...
+    int index;         // The option's unique identifier.
+                       // A single alphanumeric ASCII character literal means
+                       // this is the option's short name. Any other positive
+                       // value means the option does not have a short name.
+                       // A negative value means the option is a subcommand.
+    char *name;        // The option's unique long name (without leading "--")
+                       // or the subcommand's name.
+    char *arg;         // A single option-argument or the subcommand's operands,
+                       // as supposed to appear in the help screen
+                       // (e.g. "ARG", "[ARG]", "<arg>", ...).
                        // Square brackets mean the argument is optional.
-    char *description; // The option's description.
+    char *description; // The option's or the subcommand's description.
 };
 ```
 
-- To disable a short option, use .index integer values 1-31 or 256+.
-- To turn an option into a subcommand, use negative .index values.
 - To hide an option from the help screen, use HIDEOPT as .description.
 
 ```

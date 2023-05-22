@@ -10,12 +10,18 @@
 #include <stdio.h>
 
 struct option {
-    int index;         // The option's short name (a single character).
-    char *name;        // The option's long name (without leading "--").
-    char *arg;         // An option-argument in text format as it is supposed to
-                       // appear in the help screen: "ARG", "[ARG]", "<arg>"...
+    int index;         // The option's unique identifier.
+                       // A single alphanumeric ASCII character literal means
+                       // this is the option's short name. Any other positive
+                       // value means the option does not have a short name.
+                       // A negative value means the option is a subcommand.
+    char *name;        // The option's unique long name (without leading "--")
+                       // or the subcommand's name.
+    char *arg;         // A single option-argument or the subcommand's operands,
+                       // as they are supposed to appear in the help screen
+                       // (e.g. "ARG", "[ARG]", "<arg>", ...).
                        // Square brackets mean the argument is optional.
-    char *description; // The option's description.
+    char *description; // The option's or the subcommand's description.
 };
 
 #define HIDEOPT &var_HIDEOPT // Hides options if used as value for .description.
@@ -40,7 +46,7 @@ int main(int argc, char *argv[])
 
     int opt;
     char *optarg;
-    while (opt = getopt(&argc, &argv, &optarg, opts)) {
+    while ((opt = getopt(&argc, &argv, &optarg, opts)) != 0) {
         switch (opt) {
             case 'h':
                 print_options(stdout, opts);
@@ -279,29 +285,37 @@ static void print_block(FILE *stream, char *str, int indent, int start)
     }
 }
 
-// Returns 1 if an option index is a valid short option value, otherwise 0.
-static int is_short_option(int index)
+// Returns 1 if an option index is a valid short option character, otherwise 0.
+static inline int is_short_name(int index)
 {
-    return (index >= 48 && index <= 57) || (index >= 65 && index <= 90)
-        || (index >= 97 && index <= 122);
+    char *range = "abcdefghijklmnopqrstuvwxyz"
+                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                  "0123456789";
+    for (int i = 0; i < 62; i++) {
+        if (index == range[i])
+            return 1;
+    }
+
+    return 0;
 }
 
 // Prints a single option.
 // Adjustments here must be done in print_opts(), too.
 static void print_opt(FILE *stream, const struct option *opt, int indent)
 {
-    if (opt->index == 0 || opt->description == HIDEOPT)
+    if (opt->description == HIDEOPT)
         return;
 
     if (opt->index > 0) {
-        int short_option = is_short_option(opt->index);
+        int short_name = is_short_name(opt->index);
+
                                    // 1 2 3 4 5 6 7 8 9 0 1 2 3
         int len = fprintf(stream, "  %c%c%s%s%s%s%s%s%s%s%s%s%s",
-    /* 1 */ short_option ? '-' : ' ',
-    /* 2 */ short_option ? opt->index : ' ',
-    /* 3 */ short_option && !opt->name && opt->arg ? opt->arg[0] == '[' ? opt->arg : " " : "",
-    /* 4 */ short_option && !opt->name && opt->arg && opt->arg[0] != '[' ? opt->arg : "",
-    /* 5 */ short_option && opt->name ? "," : short_option ? "" : " ",
+    /* 1 */ short_name ? '-' : ' ',
+    /* 2 */ short_name ? opt->index : ' ',
+    /* 3 */ short_name && !opt->name && opt->arg ? opt->arg[0] == '[' ? opt->arg : " " : "",
+    /* 4 */ short_name && !opt->name && opt->arg && opt->arg[0] != '[' ? opt->arg : "",
+    /* 5 */ short_name && opt->name ? "," : short_name ? "" : " ",
     /* 6 */ opt->name ? " --" : "",
     /* 7 */ opt->name ? opt->name : "",
     /* 8 */ opt->name && opt->arg && opt->arg[0] != '[' ? " " : "",
