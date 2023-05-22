@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     // 2. Use getopt().
     int opt;
     char *optarg;
-    while (opt = getopt(&argc, &argv, &optarg, opts)) {
+    while ((opt = getopt(&argc, &argv, &optarg, opts)) != 0) {
         switch (opt) {
             case 'f':
                 flag = 1;
@@ -121,7 +121,7 @@ int subcommand1(int argc, char *argv[])
 
     int opt;
     char *optarg;
-    while (opt = getopt(&argc, &argv, &optarg, opts)) {
+    while ((opt = getopt(&argc, &argv, &optarg, opts)) != 0) {
         switch (opt) {
             ...
         }
@@ -140,7 +140,7 @@ Such subcommand functions can be called directly from within a running getopt() 
 int main(int argc, char *argv[])
 {
     ...
-    while (opt = getopt(&argc, &argv, &optarg, opts)) {
+    while ((opt = getopt(&argc, &argv, &optarg, opts)) != 0) {
         ...
         case -1:
             return subcommand1(argc, argv); // Transfer control to subcommand1().
