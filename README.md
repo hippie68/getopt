@@ -93,8 +93,6 @@ struct option {
 int getopt(int *argc, char **argv[], char **optarg, const struct option opts[]);
 ```
 
-- Returns '-' when encountering "-" (the stdin/stdout option).
-
 ```
 // Prints the specified option array's options.
 // Returns 1 if the array has subcommands, otherwise 0.
