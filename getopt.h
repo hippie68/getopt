@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
 #define ERR_SHRTOPT_UNKNOWN "Unknown option: -%c\n"
 #define ERR_LONGOPT_UNKNOWN "Unknown option: --%s\n"
 #define ERR_COMMAND_UNKNOWN "Unknown subcommand: %s\n"
+#define ERR_SHRTOPT_HATEARG "Option -%c doesn't allow an argument.\n"
 #define ERR_LONGOPT_HATEARG "Option --%s doesn't allow an argument.\n"
 
 static char var_HIDEOPT; // Dummy variable to make the HIDEOPT pointer unique.
@@ -182,6 +183,10 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option opts[])
                         if (opt->arg) {
                             *optarg = argp + 1;
                         } else {
+                            if (*(argp + 1) == '-') { // Unwanted argument.
+                                fprintf(stderr, ERR_SHRTOPT_HATEARG, *argp);
+                                return '?';
+                            }
                             *argp = '-';
                             **argv = argp; // Scan here again next round.
                             (*argv)--;
