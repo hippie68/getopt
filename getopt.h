@@ -81,6 +81,20 @@ int main(int argc, char *argv[])
 
 static char var_HIDEOPT; // Dummy variable to make the HIDEOPT pointer unique.
 
+// Returns 1 if an option index is a valid short option character, otherwise 0.
+static int is_short_name(int index)
+{
+    static char range[] = "abcdefghijklmnopqrstuvwxyz"
+                          "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                          "0123456789";
+    for (int i = 0; i < sizeof(range) - 1; i++) {
+        if (index == range[i])
+            return 1;
+    }
+
+    return 0;
+}
+
 // Left-shifts array elements by 1, moving the first element to the end.
 static void shift(char *argv[])
 {
@@ -113,7 +127,7 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option opts[])
 
     char *argp; // Pointer used to probe the command line arguments.
 
-    start:
+start:
     argp = **argv;
     if (*argp == '-') { // Option
         argp++;
@@ -183,7 +197,7 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option opts[])
                         if (opt->arg) {
                             *optarg = argp + 1;
                         } else {
-                            if (*(argp + 1) == '-') { // Unwanted argument.
+                            if (!is_short_name(*(argp + 1))) {
                                 fprintf(stderr, ERR_SHRTOPT_HATEARG, *argp);
                                 return '?';
                             }
@@ -201,7 +215,7 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option opts[])
             return '?';
         }
     } else { // Either operand or subcommand
-        not_an_option:
+not_an_option:
         ;
 
         // Return if operand is a subcommand.
@@ -232,9 +246,7 @@ int getopt(int *argc, char **argv[], char **optarg, const struct option opts[])
         goto start;
     }
 
-    parsing_finished:
-    ;
-
+parsing_finished:
     // Unhide any previously hidden operands.
     while ((*argv)[*argc] != NULL)
         (*argc)++;
@@ -284,28 +296,14 @@ static void print_block(FILE *stream, char *str, int indent, int start)
             chars_left -= next_len;
         }
 
-        next_line:
+next_line:
         putc('\n', stream);
         start = 0;
     }
 }
 
-// Returns 1 if an option index is a valid short option character, otherwise 0.
-static inline int is_short_name(int index)
-{
-    char *range = "abcdefghijklmnopqrstuvwxyz"
-                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                  "0123456789";
-    for (int i = 0; i < 62; i++) {
-        if (index == range[i])
-            return 1;
-    }
-
-    return 0;
-}
-
 // Prints a single option.
-// Adjustments here must be done in print_opts(), too.
+// Adjustments here must be done in print_options(), too.
 static void print_opt(FILE *stream, const struct option *opt, int indent)
 {
     if (opt->description == HIDEOPT)
